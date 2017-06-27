@@ -102,7 +102,7 @@ if(!isset($_SESSION['logged']) || !isset($_SESSION['user'])){
 		</div>-->
 		<ul class="nav nav-pills nav-stacked">
 			<!--<li class="active"><a href="#">Home</a></li>-->
-			<li><a href="createUser.php">Add A New Drug</a></li>
+			<li><a href="addANewDrug.php">Add A New Drug</a></li>
 			<li><a href="next.html">Menu 2</a></li>
 			<li><a href="#">Menu 3</a></li>
 		</ul>

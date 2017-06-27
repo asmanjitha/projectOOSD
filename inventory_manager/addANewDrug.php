@@ -6,7 +6,7 @@ if(!isset($_SESSION['logged']) || !isset($_SESSION['user'])){
 	header('location:../login.php');
 }else{
 	$user = unserialize($_SESSION['user']);
-	if ($user->getRoleId()!=0){
+	if ($user->getRoleId()!=2){
 		header('location:../home.php');
 	}
 }
@@ -19,87 +19,53 @@ function is_empty(...$paras){
 	return false;
 }
 $error = false;
-$conn = mysqli_connect('localhost:3306','root','1010');
+$conn = mysqli_connect('localhost','root','1010');
 if (!$conn){
 	$error = true;
 	die("Sorry server jam. </br> Please try again later.</br>");
 }
-$nameErr = $emailErr = $passwordErr = $cpasswordErr = $first_nameErr = $last_nameErr = $r_idErr= $genderErr='';
+$nameErr = $serialErr ='';
 
 if (isset($_REQUEST["submitb"])){
-	$name = $_REQUEST["u_name"];
-	$password = $_REQUEST["password"];
-	$cpassword = $_REQUEST["cpassword"];
-	$email = $_REQUEST["email"];
-	$first_name = $_REQUEST["first_name"];
-	$last_name = $_REQUEST["last_name"];
-	$r_id = $_REQUEST["r_id"];
-	if (is_empty($name)){
+	$drugname = $_REQUEST["drugname"];
+	$serial = $_REQUEST["serial"];
+	$type = $_REQUEST["type"];
+	$description = $_REQUEST["description"];
+	if (is_empty($drugname)){
 		$error = true;
-		$nameErr = "* Please enter an user name";
+		$nameErr = "* Please enter an drug name";
 	}else{
-		$query = "select u_name from hospital.users where u_name = '$name'";
+		$query = "select drug_name from hospital.drugs where drug_name = '$drugname'";
 		$ins = mysqli_query($conn,$query);
 		if (!$ins){
 			die("Server error");
 		}
 		if (mysqli_num_rows($ins)!=0){
 			$error = true;
-			$nameErr = "* User name already exits";
+			$nameErr = "* Drug already exits";
 		}
 	}
-	if (is_empty($email)){
+	if (is_empty($serial)){
 		$error = true;
-		$emailErr = "* Please enter an email";
+		$serialErr = "* Please enter a serial number";
 	}else{
-		$query = "select u_name from hospital.users where email = '$email'";
+		$query = "select serial_number from hospital.drugs where serial_number = '$serial'";
 		$ins = mysqli_query($conn,$query);
 		if (!$ins){
 			die("Server error");
 		}
 		if (mysqli_num_rows($ins)!=0){
 			$error = true;
-			$emailErr = "* User email already used";
+			$serialErr = "* Drug already used";
 		}
 	}
-	if (is_empty($password)){
-		$error = true;
-		$passwordErr = "* Please enter a password";
-	}elseif(strlen($password)<8){
-		$error = true;
-		$passwordErr = "* Atleast 8 characters!";
-	}
-	if (is_empty($cpassword)){
-		$error = true;
-		$cpasswordErr = "* Please confirm the password";
-	}elseif($cpassword!=$password){
-		$error = true;
-		$cpasswordErr = "* password miss match!";
-	}
-	if (is_empty($first_name)){
-		$error = true;
-		$first_nameErr = "* Required";
-	}
-	if (is_empty($last_name)){
-		$error = true;
-		$last_nameErr = "* Required";
-	}
-	if (is_empty($r_id)){
-		$error = true;
-		$r_idErr = "* Required";
-	}else{
-		try{
-			$r_id = intval($r_id);
-		}catch(Exception $e){
-			$error = true;
-			$r_idErr = "* Required";
-		} 
-	}
+	
+	
 	if (!$error){
-		$query = "insert into hospital.users (u_name,first_name,last_name,email,password,role_id) values ('$name','$first_name','$last_name','$email','$password','$r_id')";
+		$query = "insert into hospital.drugs (drug_name,serial_number,type,description) values ('$drugname','$serial','$type','$description')";
 		$ins = mysqli_query($conn,$query);
 		if ($ins){
-			header('location:newUserCreated.php');
+			header('location:drugSaved.php');
 		}else{
 			echo "sql wrong</br>".mysqli_error($conn)."</br>";
 		}
@@ -126,6 +92,9 @@ if (isset($_REQUEST["submitb"])){
 .navbar-default-nopaddingup{
 	padding-bottom: 0px;
 	margin-bottom: 0px;
+}
+lbl1{
+	align: right;
 }
 </style>
 
@@ -198,46 +167,48 @@ if (isset($_REQUEST["submitb"])){
 		</div>-->
 		<ul class="nav nav-pills nav-stacked">
 			<!--<li class="active"><a href="#">Home</a></li>-->
-			<li><a href="createUser.php">Create A New User</a></li>
-			<li><a href="viewUser.php">View User</a></li>
+			<li><a href="addANewDrug.php">Add A New Drug</a></li>
+			<li><a href="next.html">Menu 2</a></li>
 			<li><a href="#">Menu 3</a></li>
 		</ul>
 		
 	  </div>
 	  <div class='col-md-10'>
-		<div class="container">
-    <h1 class="well">User Details</h1>
+	  <!-- Put Anything-->
+	  <div class="container">
+    <h1 class="well">Drug Details</h1>
 	<div class="col-lg-12 well">
 	<div class="row">
-				<form method ='POST' action="createUser.php">
+				<form method ='POST' action="addANewDrug.php">
 					<div class="col-sm-12">
-						<div class="row">
+						<!--<div class="row">
 							<div class="col-sm-6 form-group">
-								<label>First Name<span style = "color:red"><?php echo "*";?></label>
+								<label>First Name</label>
 								<input name= "first_name" type="text" placeholder="Enter First Name Here.." class="form-control">
 								<label><span style = "color:red"><?php echo $first_nameErr;?></span></label>
 							</div>
 							<div class="col-sm-6 form-group">
-								<label>Last Name<span style = "color:red"><?php echo "*";?></label>
+								<label>Last Name</label>
 								<input name="last_name"  type="text" placeholder="Enter Last Name Here.." class="form-control">
 								<label><span style = "color:red"><?php echo $last_nameErr;?></span></label>
 							</div>
-						</div>
+						</div>-->
 						<div class="row">
 							<div class="col-sm-6 form-group">
-								<label>User Name<span style = "color:red"><?php echo "*";?></label>
-								<input name= "u_name" type="text" placeholder="Enter User Name Here.." class="form-control">
-								<label><span style = "color:red"><?php echo $nameErr;?></span></label>
+								<label>Serial Number <span style = "color:red"><?php echo "*";?></span>   </label>
+								<input name= "serial" type="text" placeholder="Enter Serial Number Here.." class="form-control">
+								<label><span style = "color:red"><?php echo $serialErr;?></span></label>
 							</div>
 							<div class="col-sm-6 form-group">
 								<!--<label>Last Name</label>
 								<input type="text" placeholder="Enter Last Name Here.." class="form-control">-->
 								<div class="form-group">
-									<label for="sel1">Role:</label>
-									<select name= "r_id" class="form-control" id="sel1">
-									<option value="0">Admin</option>
-									<option value="1">Dispenser</option>
-									<option value="2">Inventory Manager</option>
+									<label for="sel1">Drug Type:</label>
+									<select name= "type" class="form-control" id="sel1">
+									<option value="Tablet">Tablet</option>
+									<option value="Spray">Spray</option>
+									<option value="Syrup">Syrup</option>
+									<option value="Cream">Cream</option>
 									</select>
 								</div>
 							</div>
@@ -277,21 +248,21 @@ if (isset($_REQUEST["submitb"])){
 					</div>	
 						-->
 					<div class="form-group">
-						<label>Email Address<span style = "color:red"><?php echo "*";?></label>
-						<!--<label><span style = "color:red"><?php echo $emailErr;?></span></label>-->
-						<input name="email"  type="text" placeholder="Enter Email Address Here.." class="form-control">
-						<label><span style = "color:red"><?php echo $emailErr;?></span></label>
+						<label>Drug Name<span style = "color:red"><?php echo "*";?></span></label>
+						<input name="drugname"  type="text" placeholder="Enter Drug Name Here.." class="form-control">
+						<label><span style = "color:red"><?php echo $nameErr;?></span></label>
 					</div>	
 					<div class="form-group">
-						<label>Password<span style = "color:red"><?php echo "*";?></label>
-						<input name= "password" type="text" placeholder="Enter Password Here.." class="form-control">
-						<label><span style = "color:red"><?php echo $passwordErr;?></span></label>
+						<label>Description</label>
+						<input name= "description" type="text" placeholder="Enter Description.." class="form-control">
+						
 					</div>
+					<!--
 					<div class="form-group">
-						<label>Confirm Password<span style = "color:red"><?php echo "*";?></label>
+						<label>Confirm Password</label>
 						<input name="cpassword" type="text" placeholder="Re-enter Password Here.." class="form-control">
-						<label><span style = "color:red"><?php echo $cpasswordErr;?></span></label>
-					</div>
+						<label><span style = "color:red"></span></label>
+					</div>-->
 					<div class="row">
 					<div class="col-md-10">
 					<button  type="Submit" class="btn btn-lg btn-info" name="submitb" >Submit</button>
@@ -300,12 +271,14 @@ if (isset($_REQUEST["submitb"])){
 					<label id="lbl1"><span style = "color:red; text-align:right" ><?php echo "* Required";?></span></label>
 					</div>
 					</div>
-					<!--<button  type="Submit" class="btn btn-lg btn-info" name="submitb" >Submit</button>	-->				
 					</div>
 				</form> 
 				</div>
 	</div>
 	</div>
+	  
+	  
+	  <!-- Put Anything-->
 	  </div>
 	</div>
 </div>
