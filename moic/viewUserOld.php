@@ -2,14 +2,14 @@
 session_start();
 include('../dbconnection.php'); //$conn
 include('../User.php');
-include('basicTemp.php');
+include('../basicTemp.php');
 
 if(!isset($_SESSION['logged']) || !isset($_SESSION['user'])){
   header('location:../login.php');
 }
 $pages = $_SESSION['pages'];
 $user = unserialize($_SESSION['user']);
-if ($user->getRoleId()!=2){
+if ($user->getRoleId()!=0){
   header('location:../logout.php');
 }
 ?>

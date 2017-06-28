@@ -1,5 +1,6 @@
 <?php
 session_start();
+include('dbconnection.php');
 include('User.php');
 function is_empty(...$paras){
     foreach ($paras as $para){
@@ -15,16 +16,11 @@ $passwordErr = "Password";
 $pErr = false;
 $nErr = false;
 if (isset($_SESSION['logged']) && $_SESSION['logged']){
-    header('location:logged.php');
+    header('location:home.php');
 }elseif (isset($_REQUEST["Submit"])){
     $error = false;
     $name = $_REQUEST["Username"];
     $password = $_REQUEST["Password"];
-    $conn = mysqli_connect('localhost:3306','root','1010');
-    if (!$conn){
-        $error = true;
-        die("Sorry server is not responding. </br> Please try again later.</br>");
-    }
     if (is_empty($name)){
         $error = true;
         $nameErr = "*";
@@ -36,7 +32,7 @@ if (isset($_SESSION['logged']) && $_SESSION['logged']){
     /*echo $nameErr."</br>";
     echo $passwordErr."</br>";*/
     if (!$error){
-        $query = "select password,u_id,role_id,email,first_name from hospital.users where u_name ='$name' ";
+        $query = "select password,u_id,role_id,email,first_name,last_name from hospital.users where u_name ='$name' ";
         $res = mysqli_query($conn,$query);
         if ($res){
             $res = mysqli_fetch_array($res,MYSQLI_ASSOC);
@@ -48,8 +44,28 @@ if (isset($_SESSION['logged']) && $_SESSION['logged']){
                 $nuser->setUId($res['u_id']);
                 $nuser->setFirstName($res['first_name']);
                 $nuser->setpassword($res['password']);
+                $nuser->setLastName($res['last_name']);
                 $_SESSION['logged'] = true;
                 $_SESSION['user'] = serialize($nuser);
+                $role_idNew = $res['role_id'];
+                mysqli_select_db($conn,"hospital");
+                $query = "SELECT pg.page_url,pg.page_name
+                from pages pg
+                inner join role2page r2p
+                on pg.page_id = r2p.page_id
+                where r2p.role_id='$role_idNew';";
+                $res = mysqli_query($conn,$query);
+                $pages = array();
+                if ($res){
+                  while($row=mysqli_fetch_array($res,MYSQLI_ASSOC)){
+                    $tempPage = array();
+                    array_push($tempPage,$row['page_name']);
+                    array_push($tempPage,$row['page_url']);
+                    array_push($pages,$tempPage);
+                  }
+
+                }
+                $_SESSION['pages'] = $pages;
                 header('location:home.php');
             }elseif ($res['u_id']==''){
 				$nErr = true;
