@@ -12,7 +12,7 @@ $user = unserialize($_SESSION['user']);
 if ($user->getRoleId()!=0){
   header('location:../logout.php');
 }
-$query = "select u_id,role_id,email,first_name,u_name,last_name from hospital.users where deleted=0";
+$query = "select u_id,role_id,email,first_name,u_name,last_name from hospital.users where (deleted=0 AND role_id>0 )";
 $res = mysqli_query($conn,$query);
 if ($res){
   $users = array();
@@ -44,7 +44,7 @@ if ($res){
       <?php
       foreach( $pages as $tempPag ) {?>
         <li><a href="<?php echo $tempPag[1]; ?>"><?php echo $tempPag[0]; ?></a></li>
-      <?php      
+      <?php 
       }; 
 ?>
     </ul>
@@ -83,9 +83,9 @@ if ($res){
             }; ?></td>
           <td><?php echo $user->getFirstName(); ?></td>  
           <td><?php echo $user->getEmail(); ?></td> 
-          <td><button type="button" class="btn btn-warning">Edit</button>
+          <td><button type="button" class="btn btn-warning" onclick="eRedirect(<?php echo  $user->getUId(); ?>)">Edit</button>
           <button type="button" class="btn btn-danger" id="delete" onclick = "newF(<?php echo  $user->getUId(); ?>)">Delete</button></td> 
-        </tr> 
+        </tr>
         
       <?php
       }
@@ -125,6 +125,33 @@ if ($res){
   </div>
 </div>
 <script type="text/javascript">
+  function delUser(u_id){
+    var dt = false;
+    $.ajax({
+    url : "ajax.php",
+    type : "POST",
+    async : false,
+    data : {
+      "del_user" : true,
+      "u_id" : u_id
+    },
+    success: function (data){
+        if(data=="Ok"){
+           dt = true;
+        }
+    }
+});
+    return dt;
+}
+function Redirect(){
+  location.reload();
+}
+function eRedirect(u_id){
+  window.location.href=("editUser.php?u_id="+u_id);
+}
+
+</script>
+<script type="text/javascript">
 function newF(u_id){
   swal({
   title: "Are you sure?",
@@ -133,10 +160,19 @@ function newF(u_id){
   showCancelButton: true,
   confirmButtonColor: "#DD6B55",
   confirmButtonText: "Yes, delete it!",
-  closeOnConfirm: false
+  cancelButtonText: "No, cancel!",
+  closeOnConfirm: false,
+  closeOnCancel: true
 },
-function(){
-  swal("Deleted!", "User deleted.", "success");
+function(isConfirm){
+  var dt = true;
+  dt =  delUser(u_id);
+  if (dt) {
+    swal("Deleted!", "User has deleted successfully", "success");
+  } else {
+    swal("Error!", "Server Error has occurred", "error");
+  }
+  setTimeout('Redirect()', 1500);
 });
 }
 </script>

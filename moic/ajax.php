@@ -1,11 +1,18 @@
 <?php
-$conn = mysqli_connect('localhost:3306','root','1010');
-if (!$conn){
-    $error = true;
-    die("Sorry server is not responding. </br> Please try again later.</br>");
-}
-$query = "select u_id,role_id,email,first_name,u_name,last_name from hospital.users where deleted=0";
-$res = mysqli_query($conn,$query);
-if(isset())
+include('../dbconnection.php');
 
-?> 
+
+if(isset($_REQUEST["del_user"])){
+	$u_id = $_REQUEST["u_id"];
+	$query = "UPDATE hospital.users SET deleted=1 WHERE u_id='$u_id'";
+	$res = mysqli_query($conn,$query);
+	if($res){
+		echo "Ok";	
+	}else{
+		echo "no";
+	}
+	
+	exit();
+}
+
+?>
