@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 27, 2017 at 10:53 AM
+-- Generation Time: Jun 28, 2017 at 03:13 PM
 -- Server version: 10.1.21-MariaDB
 -- PHP Version: 7.1.1
 
@@ -35,7 +35,8 @@ CREATE TABLE `drug batches` (
   `inventory_balance` int(11) NOT NULL,
   `dispensory_balance` int(11) NOT NULL,
   `other_departments_balance` int(11) NOT NULL,
-  `total_balance` int(11) NOT NULL
+  `total_balance` int(11) NOT NULL,
+  `deleted` int(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -48,15 +49,21 @@ CREATE TABLE `drugs` (
   `serial_number` varchar(25) NOT NULL,
   `drug_name` varchar(100) NOT NULL,
   `type` varchar(25) NOT NULL,
-  `description` varchar(250) NOT NULL
+  `description` varchar(250) NOT NULL,
+  `deleted` int(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `drugs`
 --
 
-INSERT INTO `drugs` (`serial_number`, `drug_name`, `type`, `description`) VALUES
-('123', 'drug1', 'Tablet', 's jv jmc vmcx');
+INSERT INTO `drugs` (`serial_number`, `drug_name`, `type`, `description`, `deleted`) VALUES
+('123', 'drug1', 'Tablet', 's jv jmc vmcx', 0),
+('injet12gy32', 'insulin', 'Syrup', '', 0),
+('paracitamol121cdv2w3', 'paracitamol', 'Tablet', '', 0),
+('pen12e5f5', 'penadole', 'Tablet', 'paracitamol type of drug', 0),
+('s12nujnb4', 'insulin1', 'Spray', '', 0),
+('vintagino', 'vinef3f123', 'Cream', '100ml', 0);
 
 -- --------------------------------------------------------
 
@@ -68,6 +75,27 @@ CREATE TABLE `notifications` (
   `notification_id` int(11) NOT NULL,
   `description` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `pages`
+--
+
+CREATE TABLE `pages` (
+  `page_id` int(2) NOT NULL,
+  `page_url` varchar(100) NOT NULL,
+  `page_name` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `pages`
+--
+
+INSERT INTO `pages` (`page_id`, `page_url`, `page_name`) VALUES
+(2, 'createUser.php', 'Create A New User'),
+(3, 'viewUser.php', 'View Users'),
+(4, 'addANewDrug.php', 'Add A New Drug');
 
 -- --------------------------------------------------------
 
@@ -102,6 +130,26 @@ CREATE TABLE `requests` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `role2page`
+--
+
+CREATE TABLE `role2page` (
+  `role_id` int(3) NOT NULL,
+  `page_id` int(3) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `role2page`
+--
+
+INSERT INTO `role2page` (`role_id`, `page_id`) VALUES
+(0, 2),
+(0, 3),
+(2, 4);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `roles`
 --
 
@@ -132,17 +180,22 @@ CREATE TABLE `users` (
   `last_name` varchar(25) NOT NULL,
   `email` varchar(50) NOT NULL,
   `password` varchar(20) NOT NULL,
-  `role_id` int(4) NOT NULL
+  `role_id` int(4) NOT NULL,
+  `deleted` int(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`u_id`, `u_name`, `first_name`, `last_name`, `email`, `password`, `role_id`) VALUES
-(2, 'admin', 'firstadmin', 'lastadmin', 'admin@gmail.com', 'superadmin', 0),
-(3, 'Dis1', 'FirstDis', 'LastDis', 'Dis1@gmail.com', 'Dis1@hospital', 1),
-(4, 'Inv1', 'firstInv1', 'lastInv1', 'Inv1@gmail.com', 'Inv1@hospital', 2);
+INSERT INTO `users` (`u_id`, `u_name`, `first_name`, `last_name`, `email`, `password`, `role_id`, `deleted`) VALUES
+(2, 'admin', 'zfdsf', 'lastadmin', 'admin@gmail.com', 'superadmin', 0, 0),
+(3, 'Dis1', 'FirstDis', 'LastDis', 'Dis1@gmail.com', 'Dis1@hospital', 1, 0),
+(4, 'Inv1', 'firstInv1', 'lastInv1', 'Inv1@gmail.com', 'Inv1@hospital', 2, 0),
+(5, 'DIs2', 'firstDis', 'LastDis', 'Dis2@gmail.com', 'Dis2@hospital', 1, 1),
+(6, 'Inv2', 'firstInv', 'lastInv', 'Inv2@gmail.com', 'Inv2@hospital', 0, 0),
+(7, 'DIs3', 'FirstDis', 'LastDis', 'Dis3@gmail.com', 'Dis3@hospital', 1, 0),
+(8, 'Inv3', 'firstInv', 'lastInv', 'Inv3@gmail.com', 'Inv3@hospital', 0, 0);
 
 --
 -- Indexes for dumped tables
@@ -168,6 +221,12 @@ ALTER TABLE `notifications`
   ADD PRIMARY KEY (`notification_id`);
 
 --
+-- Indexes for table `pages`
+--
+ALTER TABLE `pages`
+  ADD PRIMARY KEY (`page_id`);
+
+--
 -- Indexes for table `request details`
 --
 ALTER TABLE `request details`
@@ -180,6 +239,12 @@ ALTER TABLE `request details`
 ALTER TABLE `requests`
   ADD PRIMARY KEY (`request_id`),
   ADD KEY `u_id` (`u_id`);
+
+--
+-- Indexes for table `role2page`
+--
+ALTER TABLE `role2page`
+  ADD PRIMARY KEY (`role_id`,`page_id`);
 
 --
 -- Indexes for table `roles`
@@ -207,6 +272,11 @@ ALTER TABLE `users`
 ALTER TABLE `notifications`
   MODIFY `notification_id` int(11) NOT NULL AUTO_INCREMENT;
 --
+-- AUTO_INCREMENT for table `pages`
+--
+ALTER TABLE `pages`
+  MODIFY `page_id` int(2) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+--
 -- AUTO_INCREMENT for table `request details`
 --
 ALTER TABLE `request details`
@@ -220,7 +290,7 @@ ALTER TABLE `requests`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `u_id` int(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `u_id` int(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 --
 -- Constraints for dumped tables
 --
