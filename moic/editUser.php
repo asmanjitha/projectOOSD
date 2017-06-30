@@ -166,30 +166,29 @@ if (isset($_REQUEST["submitb"])){
 										</div>
 									</div>
             
-								</div>
-						<!--</div>-->
-								<div class="form-group">
-									<label>Email Address</label>
-									<input name="email"  type="text" placeholder="Enter Email Address Here.." class="form-control" value= '<?php echo $em ?>'>
-									<label><span style = "color:red"><?php echo $emailErr;?></span></label>
-								</div>  
-					
-								<div class="form-group">
-									<label>New Password</label>
-									<input name= "password" type="password" placeholder="Enter New Password Here.." class="form-control" >
-									<label><span style = "color:red"><?php echo $passwordErr;?></span></label>
-								</div>
-								<div class="form-group">
-									<label>Confirm Password</label>
-									<input name="cpassword" type="password" placeholder="Re-enter Password Here.." class="form-control" >
-									<label><span style = "color:red"><?php echo $cpasswordErr;?></span></label>
-								</div>
-								<div class="row">
-									<div class="col-md-10">
-										<button  type="Submit" class="btn btn-lg btn-info" name="submitb" >Submit</button>
+								
+									<div class="form-group">
+										<label>Email Address</label>
+										<input name="email"  type="text" placeholder="Enter Email Address Here.." class="form-control" value= '<?php echo $em ?>'>
+										<label><span style = "color:red"><?php echo $emailErr;?></span></label>
+									</div>  
+
+									<div class="form-group">
+										<label>New Password</label>
+										<input name= "password" type="password" placeholder="Enter New Password Here.." class="form-control" >
+										<label><span style = "color:red"><?php echo $passwordErr;?></span></label>
+									</div>
+									<div class="form-group">
+										<label>Confirm Password</label>
+										<input name="cpassword" type="password" placeholder="Re-enter Password Here.." class="form-control" >
+										<label><span style = "color:red"><?php echo $cpasswordErr;?></span></label>
+									</div>
+									<div class="row">
+										<div class="col-md-10">
+											<button  type="Submit" class="btn btn-lg btn-info" name="submitb" >Submit</button>
+										</div>
 									</div>
 								</div>
-          
 							</form> 
 						</div>
 					</div>
